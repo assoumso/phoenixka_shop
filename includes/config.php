@@ -50,19 +50,21 @@ define('DB_CHARSET', 'utf8mb4');
 // Configuration du site
 define('SITE_NAME', 'PhoenixKA Shop');
 
-// Détection dynamique propre de l'URL du site (HTTPS Reverse Proxy / Cloud Compatible)
+// Détection dynamique universelle de l'URL du site (HTTPS Proxy & Cloud Compatible)
 $isHttps = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
            (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 $protocol = $isHttps ? 'https://' : 'http://';
 
-$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
-$baseDir = ($scriptDir === '/' || $scriptDir === '.' || $scriptDir === '\\') ? '' : rtrim($scriptDir, '/');
+$docRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '');
+$appRoot = str_replace('\\', '/', realpath(dirname(__DIR__)) ?: '');
 
-if (php_sapi_name() === 'cli-server') {
-    define('SITE_URL', rtrim($protocol . $hostName, '/'));
-} else {
-    define('SITE_URL', rtrim($protocol . $hostName . $baseDir, '/'));
+$basePath = '';
+if (!empty($docRoot) && !empty($appRoot) && str_starts_with($appRoot, $docRoot)) {
+    $basePath = substr($appRoot, strlen($docRoot));
 }
+$basePath = rtrim(str_replace('\\', '/', $basePath), '/');
+
+define('SITE_URL', rtrim($protocol . $hostName . $basePath, '/'));
 define('SITE_DESCRIPTION', 'Créez votre boutique en ligne en quelques minutes. Des solutions intelligentes pour booster votre réussite.');
 
 // Chemins
