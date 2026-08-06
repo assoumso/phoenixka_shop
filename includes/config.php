@@ -3,14 +3,24 @@
  * PhoenixKA Shop - Configuration principale
  */
 
-// Mode debug
-define('DEBUG_MODE', true);
+// Mode debug (Passer à false en production sur votre hébergeur web)
+define('DEBUG_MODE', $_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1');
 
 // Configuration base de données
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'phoenixka_shop');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+// Si vous êtes sur votre hébergeur web distant, ajustez ces 4 constantes :
+if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1' || str_contains($_SERVER['HTTP_HOST'], '127.0.0.1:8000')) {
+    // Configuration LOCALHOST (XAMPP / WAMP / Dev)
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'phoenixka_shop');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+} else {
+    // Configuration HÉBERGEUR DISTANT (cPanel / LWS / Hostinger / O2Switch)
+    define('DB_HOST', 'localhost'); // ou le nom d'hôte fourni par votre hébergeur (ex: sql.hebergeur.com)
+    define('DB_NAME', 'votre_nom_bdd'); // Nom de la base créée chez l'hébergeur
+    define('DB_USER', 'votre_utilisateur_bdd'); // Utilisateur BDD distant
+    define('DB_PASS', 'votre_mot_de_passe_bdd'); // Mot de passe BDD distant
+}
 define('DB_CHARSET', 'utf8mb4');
 
 // Configuration du site
