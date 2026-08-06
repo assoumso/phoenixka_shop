@@ -1,0 +1,47 @@
+RewriteEngine On
+
+# Prevent directory listing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "\.(sql|log|env)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Protect includes directory
+RewriteRule ^includes/ - [F,L]
+RewriteRule ^database/ - [F,L]
+
+# 1. Subdomain routing (e.g. ahfpilup.phoenixka.shop)
+RewriteCond %{HTTP_HOST} ^([a-zA-Z0-9_-]+)\.(phoenixka\.shop|mychariow\.shop)$ [NC]
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteCond %{REQUEST_URI} !^/boutique/
+RewriteRule ^(.*)$ boutique/index.php?subdomain=%1 [L,QSA]
+
+# 2. Legacy boutique routing: /boutique/slug -> /boutique/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^boutique/([a-zA-Z0-9_-]+)/?$ boutique/index.php?store_slug=$1 [L,QSA]
+
+# 3. Direct Short URL routing like Chariow: /slug -> /boutique/index.php (e.g. /boutique-ci or /ahfpilup)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/(assets|auth|dashboard|uploads|includes|database|api|terms|privacy|admin|download) [NC]
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ boutique/index.php?store_slug=$1 [L,QSA]
+
+# 4. Hide .php extensions in URLs automatically (e.g. /auth/login -> /auth/login.php or /dashboard/orders -> /dashboard/orders.php)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [L,QSA]
+
+# Default charset
+AddDefaultCharset UTF-8
+
+# PHP settings
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 12M
+    php_value max_execution_time 60
+    php_value session.cookie_httponly 1
+</IfModule>
