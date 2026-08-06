@@ -39,11 +39,11 @@ if ($envDbHost && $envDbName && $envDbUser) {
     define('DB_USER', 'root');
     define('DB_PASS', '');
 } else {
-    // Configuration HÉBERGEUR DISTANT (Render / cPanel / LWS / Hostinger)
+    // Configuration HÉBERGEUR DISTANT (cPanel / LWS / Hostinger)
     define('DB_HOST', 'localhost');
-    define('DB_NAME', 'votre_nom_bdd');
-    define('DB_USER', 'votre_utilisateur_bdd');
-    define('DB_PASS', 'votre_mot_de_passe_bdd');
+    define('DB_NAME', 'ridwdrbe_phoenixka_shop');
+    define('DB_USER', 'ridwdrbe_phoenixka_shop');
+    define('DB_PASS', 'Assoumou88@');
 }
 define('DB_CHARSET', 'utf8mb4');
 
