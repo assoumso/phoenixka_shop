@@ -7,8 +7,18 @@
 define('DEBUG_MODE', $_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1');
 
 // Configuration base de données
-// Si vous êtes sur votre hébergeur web distant, ajustez ces 4 constantes :
-if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1' || str_contains($_SERVER['HTTP_HOST'], '127.0.0.1:8000')) {
+$envDbHost = getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? null);
+$envDbName = getenv('DB_NAME') ?: ($_ENV['DB_NAME'] ?? null);
+$envDbUser = getenv('DB_USER') ?: ($_ENV['DB_USER'] ?? null);
+$envDbPass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : ($_ENV['DB_PASS'] ?? null);
+
+if ($envDbHost && $envDbName && $envDbUser) {
+    // Variables d'environnement Vercel / Cloud
+    define('DB_HOST', $envDbHost);
+    define('DB_NAME', $envDbName);
+    define('DB_USER', $envDbUser);
+    define('DB_PASS', $envDbPass ?? '');
+} elseif (in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1']) || str_contains($_SERVER['HTTP_HOST'] ?? '', '127.0.0.1:8000')) {
     // Configuration LOCALHOST (XAMPP / WAMP / Dev)
     define('DB_HOST', 'localhost');
     define('DB_NAME', 'phoenixka_shop');
@@ -30,7 +40,6 @@ $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' 
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 $baseDir = $scriptName === '/' ? '' : $scriptName;
-// Dans le cas de php -S (serveur de dev local), dirname($_SERVER['SCRIPT_NAME']) peut ne pas donner le bon dossier de base si on appelle directement à la racine
 if (php_sapi_name() == 'cli-server') {
     define('SITE_URL', $protocol . $host);
 } else {
@@ -94,9 +103,15 @@ function getDB() {
             ]);
         } catch (PDOException $e) {
             if (DEBUG_MODE) {
-                die('Erreur de connexion: ' . $e->getMessage());
+                die('Erreur de connexion BDD: ' . $e->getMessage());
             }
-            die('Erreur de connexion à la base de données.');
+            die("<div style='font-family:sans-serif;padding:50px 20px;text-align:center;background:#0F172A;color:#FFF;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center'>
+                <div style='background:#1E293B;border:1px solid #334155;padding:30px;border-radius:18px;max-width:550px'>
+                    <h2 style='color:#EAB308;margin-top:0'>⚠️ Connexion Base de Données requise</h2>
+                    <p style='color:#94A3B8;line-height:1.6'>Votre application PHP sur Vercel fonctionne, mais les identifiants de la base de données MySQL doivent être configurés dans les variables d'environnement Vercel (DB_HOST, DB_NAME, DB_USER, DB_PASS).</p>
+                    <p style='font-size:0.85rem;color:#64748B'>Détail technique : " . htmlspecialchars($e->getMessage()) . "</p>
+                </div>
+            </div>");
         }
     }
     return $pdo;
