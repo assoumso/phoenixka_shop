@@ -341,7 +341,7 @@ INSERT INTO platform_settings (setting_key, setting_value, setting_type) VALUES
 -- Utilisateur admin par défaut
 -- =====================================================
 INSERT INTO users (first_name, last_name, email, phone, password_hash, role, is_verified, is_active) VALUES
-('Admin', 'PhoenixKA', 'admin@phoenixka.shop', '+237600000000', '$2y$10$placeholder_hash_change_me', 'super_admin', 1, 1);
+('Admin', 'PhoenixKA', 'admin@phoenixka.shop', '+237600000000', '$2y$12$woji.mqG7DU2DcXa5ZS7t.xEgNVyNYDxSepjIObEUGYmyXbpXNC92', 'super_admin', 1, 1);
 
 -- =====================================================
 -- Index pour les performances
